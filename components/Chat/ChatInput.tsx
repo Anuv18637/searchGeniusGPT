@@ -48,7 +48,8 @@ interface Props {
   textareaRef: MutableRefObject<HTMLTextAreaElement | null>;
 }
 
-export const ChatInput: FC<Props> = ({
+export const 
+ChatInput: FC<Props> = ({
   messageIsStreaming,
   model,
   conversationIsEmpty,

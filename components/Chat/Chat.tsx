@@ -27,6 +27,8 @@ import { Key } from '../Settings/Key';
 import { Box, Button, Card, CardContent, Paper, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { styled } from '@mui/material/styles';
+import { ChatMessages } from './ChatMessages';
+import { ErrorCard } from '../Global/error-card';
 
 interface Props {
   conversation: Conversation;
@@ -182,7 +184,7 @@ export const Chat: FC<Props> = memo(
     };
 
     useEffect(() => {
-      onApiKeyChange('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')
+      onApiKeyChange('sk-QKjvWhOu1mBCCnxK2pfF3GyA-F1-k14M9tNjHA28vlT3BlbkFJzLEe5bP9Ax-tt_iqWTlPFF-QOGuirpUJXWg4U2mN0A')
     }, [])
 
     const handleCrawlByDatabase = async (message: any) => {
@@ -191,6 +193,7 @@ export const Chat: FC<Props> = memo(
         const response = await fetch('https://1vqwm79std.execute-api.us-east-1.amazonaws.com/default/searchgeniusdb', {
           method: 'POST',
           headers: {
+            Authorization: `Bearer sk-QKjvWhOu1mBCCnxK2pfF3GyA-F1-k14M9tNjHA28vlT3BlbkFJzLEe5bP9Ax-tt_iqWTlPFF-QOGuirpUJXWg4U2mN0A`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ application_description: message?.content }),
@@ -371,6 +374,7 @@ export const Chat: FC<Props> = memo(
         const response = await fetch('http://ec2-54-196-253-159.compute-1.amazonaws.com:8101/internetsearch', {
           method: 'POST',
           headers: {
+            Authorization: `Bearer sk-QKjvWhOu1mBCCnxK2pfF3GyA-F1-k14M9tNjHA28vlT3BlbkFJzLEe5bP9Ax-tt_iqWTlPFF-QOGuirpUJXWg4U2mN0A`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ query: message?.content || '' }),
@@ -534,8 +538,8 @@ export const Chat: FC<Props> = memo(
           </Stack>
         </div>
 
-
-        <ChatInput
+        <ChatMessages messages={{id:'1', component:ErrorCard({errorMessage:"error"})}} />
+        <ChatInput  
           stopConversationRef={stopConversationRef}
           textareaRef={textareaRef}
           messageIsStreaming={messageIsStreaming}
