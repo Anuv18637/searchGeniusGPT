@@ -74,7 +74,7 @@ export const Chat: FC<Props> = memo(
     mygptData
   }) => {
     const { t } = useTranslation('chat');
-    const [currentMessage, setCurrentMessage] = useState<Message>();
+    const [currentMessage, setCurrentMessage] = useState<any>();
     const [autoScrollEnabled, setAutoScrollEnabled] = useState<boolean>(true);
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showScrollDownButton, setShowScrollDownButton] =
@@ -136,12 +136,12 @@ export const Chat: FC<Props> = memo(
     };
     const throttledScrollDown = throttle(scrollDown, 250);
 
-    useEffect(() => {
-      throttledScrollDown();
-      setCurrentMessage(
-        conversation.messages[conversation.messages.length - 2],
-      );
-    }, [conversation.messages, throttledScrollDown]);
+    // useEffect(() => {
+    //   throttledScrollDown();
+    //   setCurrentMessage(
+    //     conversation.messages[conversation.messages.length - 2],
+    //   );
+    // }, [conversation.messages, throttledScrollDown]);
 
     useEffect(() => {
       const observer = new IntersectionObserver(
@@ -184,7 +184,7 @@ export const Chat: FC<Props> = memo(
     };
 
     useEffect(() => {
-      onApiKeyChange('sk-QKjvWhOu1mBCCnxK2pfF3GyA-F1-k14M9tNjHA28vlT3BlbkFJzLEe5bP9Ax-tt_iqWTlPFF-QOGuirpUJXWg4U2mN0A')
+      onApiKeyChange('sk-A3evLntrICe39BGOav8PAPXf-CMsxkTX9wim0MFqAYT3BlbkFJ0DSgie-4nYPzmcuSw-x2DqiaYjhpk-J8pUIzg6-twA')
     }, [])
 
     const handleCrawlByDatabase = async (message: any) => {
@@ -193,7 +193,7 @@ export const Chat: FC<Props> = memo(
         const response = await fetch('https://1vqwm79std.execute-api.us-east-1.amazonaws.com/default/searchgeniusdb', {
           method: 'POST',
           headers: {
-            Authorization: `Bearer sk-QKjvWhOu1mBCCnxK2pfF3GyA-F1-k14M9tNjHA28vlT3BlbkFJzLEe5bP9Ax-tt_iqWTlPFF-QOGuirpUJXWg4U2mN0A`,
+            Authorization: `Bearer sk-A3evLntrICe39BGOav8PAPXf-CMsxkTX9wim0MFqAYT3BlbkFJ0DSgie-4nYPzmcuSw-x2DqiaYjhpk-J8pUIzg6-twA`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ application_description: message?.content }),
@@ -374,7 +374,6 @@ export const Chat: FC<Props> = memo(
         const response = await fetch('http://ec2-54-196-253-159.compute-1.amazonaws.com:8101/internetsearch', {
           method: 'POST',
           headers: {
-            Authorization: `Bearer sk-QKjvWhOu1mBCCnxK2pfF3GyA-F1-k14M9tNjHA28vlT3BlbkFJzLEe5bP9Ax-tt_iqWTlPFF-QOGuirpUJXWg4U2mN0A`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ query: message?.content || '' }),
@@ -397,10 +396,15 @@ export const Chat: FC<Props> = memo(
 
     const handleTileClick = (tileType: string) => {
       setSelectedTile(tileType); // Set the selected tile
+      setCurrentMessage(null)
     };
 
+    const handleFollowUp = (message: any) => {
+      setCurrentMessage(message)
+      handleCrawlByInternet(message)
+    }
+
     const handleSend = async (message: Message, plugin: Plugin | null) => {
-      console.log(message, "message")
       if (!selectedTile) {
         alert(t<string>('Please select a tile before sending the message.'));
         return;
@@ -537,9 +541,34 @@ export const Chat: FC<Props> = memo(
             </Button>
           </Stack>
         </div>
+        {/*         
+          <ChatMessages selectedTile={selectedTile} messages={internetData} />
+          {isLoading && <div style={{ marginLeft: '40px', marginTop: '30px' }}>
+          <h2 style={{ fontSize: '1.3rem' }}>{currentMessage?.content}</h2>
+          <div style={{ marginTop: '15px' }}><Spinner /></div>
+        </div>} */}
 
-        <ChatMessages messages={{id:'1', component:ErrorCard({errorMessage:"error"})}} />
-        <ChatInput  
+        <div>
+          {internetData.map((data, index) => (
+            <ChatMessages
+              key={data.id || index}
+              selectedTile={selectedTile}
+              messages={data}
+              onhandleFollowUp={handleFollowUp}
+            />
+          ))}
+
+          {isLoading && (
+            <div style={{ marginLeft: '100px', marginTop: '30px' }}>
+              <h2 style={{ fontSize: '1.3rem' }}>{currentMessage?.content}</h2>
+              <div style={{ marginTop: '15px' }}>
+                <Spinner />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <ChatInput
           stopConversationRef={stopConversationRef}
           textareaRef={textareaRef}
           messageIsStreaming={messageIsStreaming}
